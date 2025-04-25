@@ -1,15 +1,25 @@
-{
-  "steps": [
-    {
-      "name": "gcr.io/cloud-builders/gsutil",
-      "args": ["cp", "gs://bucket-demo-12/init.json", "init_A.json"]
-    },
-    {
-      "name": "gcr.io/cloud-builders/gsutil",
-      "args": ["cp", "gs://bucket-demo-12/init.json", "gs://bucket-demo-13/init.json"]
-    }
-  ],
-  "options": {
-    "defaultLogsBucketBehavior": "REGIONAL_USER_OWNED_BUCKET"
-  }
-}
+steps:
+  - name: 'gcr.io/cloud-builders/gsutil'
+    id: Download init.json from bucket-one
+    args: ['cp', 'gs://bucket-one/init.json', 'init-1.json']
+
+  - name: 'gcr.io/cloud-builders/gsutil'
+    id: Download init.json from bucket-two
+    args: ['cp', 'gs://bucket-two/init.json', 'init-2.json']
+
+  - name: 'ubuntu'
+    id: Compare both JSON files
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        apt-get update && apt-get install -y jq
+        if diff <(jq -S . init-1.json) <(jq -S . init-2.json); then
+          echo "✅ Both init.json files are the same"
+        else
+          echo "❌ Files are different"
+          # exit 1  # Optional: uncomment to fail the build
+        fi
+
+options:
+  logging: CLOUD_LOGGING_ONLY
