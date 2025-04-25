@@ -1,11 +1,11 @@
 steps:
   - name: 'gcr.io/cloud-builders/gsutil'
-    id: Download init.json from bucket-one
-    args: ['cp', 'gs://bucket-one/init.json', 'init-1.json']
+    id: Download init.json from bucket-demo-12
+    args: ['cp', 'gs://bucket-demo-12/init.json', 'init-1.json']
 
   - name: 'gcr.io/cloud-builders/gsutil'
-    id: Download init.json from bucket-two
-    args: ['cp', 'gs://bucket-two/init.json', 'init-2.json']
+    id: Download init.json from bucket-demo-13
+    args: ['cp', 'gs://bucket-demo-13/init.json', 'init-2.json']
 
   - name: 'ubuntu'
     id: Compare both JSON files
