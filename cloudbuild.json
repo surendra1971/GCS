@@ -6,23 +6,7 @@
     },
     {
       "name": "gcr.io/cloud-builders/gsutil",
-      "args": ["cp", "gs://bucket-demo-13/init.json", "init_B.json"]
-    },
-    {
-      "name": "debian",
-      "entrypoint": "bash",
-      "args": [
-        "-c",
-        "apt-get update && apt-get install -y jq && jq -s '.[1] * .[0]' init_A.json init_B.json > init_merged.json"
-      ]
-    },
-    {
-      "name": "gcr.io/cloud-builders/gsutil",
-      "args": ["cp", "init_merged.json", "gs://bucket-demo-12/init.json"]
-    },
-    {
-      "name": "gcr.io/cloud-builders/gsutil",
-      "args": ["cp", "init_merged.json", "gs://bucket-demo-13/init.json"]
+      "args": ["cp", "gs://bucket-demo-12/init.json", "gs://bucket-demo-13/init.json"]
     }
   ],
   "options": {
