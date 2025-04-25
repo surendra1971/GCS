@@ -1,6 +1,7 @@
-options:
-  logging: CLOUD_LOGGING_ONLY
-
 steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
-    args: ['cp', 'init.json', 'gs://bucket-demo-12/']
+    entrypoint: gsutil
+    args: ['cp', 'init-A.json', 'gs://bucket-demo-12/init.json']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
