@@ -1,34 +1,31 @@
-steps:
-  # Step 1: Copy both init.json files
-  - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['cp', 'gs://bucket-demo-12/init.json', 'init_prod.json']
-
-  - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['cp', 'gs://bucket-demo-13/init.json', 'init_stage.json']
-
-  # Step 2: Install jq, validate JSON, and merge
-  - name: 'debian'
-    entrypoint: 'bash'
-    args:
-      - -c
-      - |
-        apt-get update && apt-get install -y jq
-
-        echo "✅ Validating JSON files..."
-        jq empty init_prod.json || { echo "❌ init_prod.json is invalid JSON"; exit 1; }
-        jq empty init_stage.json || { echo "❌ init_stage.json is invalid JSON"; exit 1; }
-
-        echo "📄 init_prod.json:"
-        cat init_prod.json
-        echo "📄 init_stage.json:"
-        cat init_stage.json
-
-        echo "🔁 Merging stage into prod (prod has higher priority)..."
-        jq -s '.[1] * .[0]' init_prod.json init_stage.json > init_merged.json
-
-        echo "✅ Merged Result:"
-        cat init_merged.json
-
-  # Step 3: Upload merged file back to prod bucket
-  - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['cp', 'init_merged.json', 'gs://bucket-demo-12/init.json']
+{
+  "steps": [
+    {
+      "name": "gcr.io/cloud-builders/gsutil",
+      "args": ["cp", "gs://dfcx-intent-throttle-bbyus-srv-aidcpcoreprod-p01/init.json", "init_A.json"]
+    },
+    {
+      "name": "gcr.io/cloud-builders/gsutil",
+      "args": ["cp", "gs://dfcx-intent-farm-b-throttle-bbyus-srv-aidcpcoreprod-p01/init.json", "init_B.json"]
+    },
+    {
+      "name": "debian",
+      "entrypoint": "bash",
+      "args": [
+        "-c",
+        "apt-get update && apt-get install -y jq && jq -s '.[0] * .[1]' init_A.json init_B.json > init_merged.json"
+      ]
+    },
+    {
+      "name": "gcr.io/cloud-builders/gsutil",
+      "args": ["cp", "init_merged.json", "gs://dfcx-intent-throttle-bbyus-srv-aidcpcoreprod-p01/init.json"]
+    },
+    {
+      "name": "gcr.io/cloud-builders/gsutil",
+      "args": ["cp", "init_merged.json", "gs://dfcx-intent-farm-b-throttle-bbyus-srv-aidcpcoreprod-p01/init.json"]
+    }
+  ],
+  "options": {
+    "defaultLogsBucketBehavior": "REGIONAL_USER_OWNED_BUCKET"
+  }
+}
