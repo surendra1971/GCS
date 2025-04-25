@@ -10,17 +10,17 @@ steps:
   - name: 'gcr.io/cloud-builders/bash'
     entrypoint: 'bash'
     args:
-      - '-c'
+      - -c
       - |
         apt-get update && apt-get install -y jq
         jq -s '.[1] * .[0]' init_prod.json init_stage.json > init_merged.json
 
-//   # Optional: Backup original prod init.json
-//   - name: 'gcr.io/cloud-builders/gsutil'
-//     args:
-//       - cp
-//       - init_prod.json
-//       - gs://bucket-demo-12/init-backup-$(date +%Y%m%d%H%M%S).json
+  # Optional: Backup original prod init.json
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args:
+      - cp
+      - init_prod.json
+      - gs://bucket-demo-12/init-backup.json
 
   # Step 3: Upload merged file to production bucket
   - name: 'gcr.io/cloud-builders/gsutil'
