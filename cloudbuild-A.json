@@ -2,5 +2,5 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-  - name: 'gcr.io/cloud-builders/gsutil'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
     args: ['cp', 'init.json', 'gs://your-gcs-bucket/init.json']
