@@ -1,5 +1,8 @@
 {
   "pricematch_chat": "1",
   "pricematch_ivr": "1",
-  "returns_chat": "1"
+  "returns_chat": "1",
+  "returns_ivr": "1",
+  "returns_voice": "1"
+  "returns_voice": "12222"
 }
