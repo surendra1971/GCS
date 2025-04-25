@@ -1,27 +1,34 @@
-options:
-  logging: CLOUD_LOGGING_ONLY
-
 steps:
-  # Step 1: Download both init.json files
+  # Step 1: Copy both init.json files
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', 'gs://bucket-demo-12/init.json', 'init_prod.json']
 
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', 'gs://bucket-demo-13/init.json', 'init_stage.json']
 
-  # Step 2: Merge JSON using jq inside Debian container
+  # Step 2: Install jq, validate JSON, and merge
   - name: 'debian'
     entrypoint: 'bash'
     args:
       - -c
       - |
         apt-get update && apt-get install -y jq
+
+        echo "✅ Validating JSON files..."
+        jq empty init_prod.json || { echo "❌ init_prod.json is invalid JSON"; exit 1; }
+        jq empty init_stage.json || { echo "❌ init_stage.json is invalid JSON"; exit 1; }
+
+        echo "📄 init_prod.json:"
+        cat init_prod.json
+        echo "📄 init_stage.json:"
+        cat init_stage.json
+
+        echo "🔁 Merging stage into prod (prod has higher priority)..."
         jq -s '.[1] * .[0]' init_prod.json init_stage.json > init_merged.json
 
-  # Step 3: Optional backup of original
-  - name: 'gcr.io/cloud-builders/gsutil'
-    args: ['cp', 'init_prod.json', 'gs://bucket-demo-12/init-backup.json']
+        echo "✅ Merged Result:"
+        cat init_merged.json
 
-  # Step 4: Upload merged file to production
+  # Step 3: Upload merged file back to prod bucket
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', 'init_merged.json', 'gs://bucket-demo-12/init.json']
