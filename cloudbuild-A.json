@@ -3,4 +3,4 @@ options:
 
 steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
-    args: ['cp', 'init.json', 'gs://bucket-demo-12/init.json']
+    args: ['cp', 'init.json', 'gs://bucket-demo-12/']
