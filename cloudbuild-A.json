@@ -1,3 +1,5 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
 steps:
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', 'init-A.json', 'gs://bucket-demo-12/']
