@@ -1,1 +1,5 @@
+steps:
+  - name: 'gcr.io/cloud-builders/gsutil'
+    args: ['cp', 'init-A.json', 'gs://bucket-demo-12/']
 
+# Optional: Set the destination file name or folder like gs://my-bucket-name/config/init.json
