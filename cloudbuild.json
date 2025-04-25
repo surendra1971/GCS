@@ -2,13 +2,15 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
+  # Step 1: Download both init.json files
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', 'gs://bucket-demo-12/init.json', 'init_prod.json']
 
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', 'gs://bucket-demo-13/init.json', 'init_stage.json']
 
-  - name: 'gcr.io/cloud-builders/bash'
+  # Step 2: Merge JSON using jq inside Debian container
+  - name: 'debian'
     entrypoint: 'bash'
     args:
       - -c
@@ -16,11 +18,10 @@ steps:
         apt-get update && apt-get install -y jq
         jq -s '.[1] * .[0]' init_prod.json init_stage.json > init_merged.json
 
+  # Step 3: Optional backup of original
   - name: 'gcr.io/cloud-builders/gsutil'
-    args:
-      - cp
-      - init_prod.json
-      - gs://bucket-demo-12/init-backup.json
+    args: ['cp', 'init_prod.json', 'gs://bucket-demo-12/init-backup.json']
 
+  # Step 4: Upload merged file to production
   - name: 'gcr.io/cloud-builders/gsutil'
     args: ['cp', 'init_merged.json', 'gs://bucket-demo-12/init.json']
