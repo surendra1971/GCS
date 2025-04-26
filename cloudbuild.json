@@ -8,22 +8,29 @@ steps:
     args: ['cp', 'gs://bucket-demo-13/init.json', 'init-2.json']
 
   - name: 'ubuntu'
-    id: Validate and Compare init.json files
+    id: Validate and Compare JSON
     entrypoint: bash
     args:
       - -c
       - |
         apt-get update && apt-get install -y jq
 
-        echo "🔍 Validating JSON files..."
-        jq -S . init-1.json > sorted-1.json || { echo "❌ init.json in bucket-demo-12 is invalid JSON"; exit 1; }
-        jq -S . init-2.json > sorted-2.json || { echo "❌ init.json in bucket-demo-13 is invalid JSON"; exit 1; }
+        echo "🔍 Validating and sorting JSON..."
+        if ! jq -S . init-1.json > sorted-1.json; then
+          echo "❌ init.json from bucket-demo-12 is invalid JSON"
+          exit 1
+        fi
 
-        echo "🔄 Comparing JSON files..."
-        if diff sorted-1.json sorted-2.json; then
-          echo "✅ Both init.json files in bucket-demo-12 and bucket-demo-13 are the same"
+        if ! jq -S . init-2.json > sorted-2.json; then
+          echo "❌ init.json from bucket-demo-13 is invalid JSON"
+          exit 1
+        fi
+
+        echo "🔄 Comparing sorted JSON files..."
+        if cmp -s sorted-1.json sorted-2.json; then
+          echo "✅ Both init.json files are identical in content"
         else
-          echo "❌ init.json files in the two buckets are different"
+          echo "❌ init.json files are different"
           exit 1
         fi
 
