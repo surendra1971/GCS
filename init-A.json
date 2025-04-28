@@ -3,8 +3,8 @@
   "pricematch_ivr": "1",
   "returns_chat": "1",
   "returns_ivr": "1",
-  "returns_voice": "1"
-  "returns_voice": "12222"
-  "returns_voice": "1243522"
+  "returns_voice": "1",
+  "returns_voice": "12222",
+  "returns_voice": "1243522",
   "returns_call": "33333"
 }
