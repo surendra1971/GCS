@@ -1,36 +1,29 @@
 steps:
-  - name: 'gcr.io/cloud-builders/gsutil'
-    id: Download init.json from bucket-demo-12
-    args: ['cp', 'gs://bucket-demo-12/init.json', 'init-1.json']
-
-  - name: 'gcr.io/cloud-builders/gsutil'
-    id: Download init.json from bucket-demo-13
-    args: ['cp', 'gs://bucket-demo-13/init.json', 'init-2.json']
-
   - name: 'ubuntu'
-    id: Validate and Compare JSON
+    id: Validate and Compare GitHub init JSON files
     entrypoint: bash
     args:
       - -c
       - |
         apt-get update && apt-get install -y jq
 
-        echo "🔍 Validating and sorting JSON..."
-        if ! jq -S . init-1.json > sorted-1.json; then
-          echo "❌ init.json from bucket-demo-12 is invalid JSON"
+        echo "🔍 Validating init-A.json..."
+        if ! jq empty init-A.json; then
+          echo "❌ init-A.json is invalid JSON"
           exit 1
         fi
 
-        if ! jq -S . init-2.json > sorted-2.json; then
-          echo "❌ init.json from bucket-demo-13 is invalid JSON"
+        echo "🔍 Validating init-B.json..."
+        if ! jq empty init-B.json; then
+          echo "❌ init-B.json is invalid JSON"
           exit 1
         fi
 
-        echo "🔄 Comparing sorted JSON files..."
-        if cmp -s sorted-1.json sorted-2.json; then
-          echo "✅ Both init.json files are identical in content"
+        echo "🔍 Comparing init-A.json and init-B.json after sorting..."
+        if diff <(jq -S . init-A.json) <(jq -S . init-B.json); then
+          echo "✅ Both JSON files are identical!"
         else
-          echo "❌ init.json files are different"
+          echo "❌ JSON files are different!"
           exit 1
         fi
 
